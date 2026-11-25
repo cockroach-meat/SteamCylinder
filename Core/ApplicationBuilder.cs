@@ -6,6 +6,7 @@ public class ApplicationBuilder
 
     public Application Build()
     {
+        Services.InitializeSingletonServices();
         return new Application(Services);
     }
 }
