@@ -60,11 +60,22 @@ public sealed partial class SteamCMD : ISteamCMD
         if (OperatingSystem.IsWindows())
         {
             await ZipFile.ExtractToDirectoryAsync(archiveFileName, _steamCmdStandardLocation);
+
+            return;
         }
 
         if (OperatingSystem.IsLinux())
         {
-            await TarFile.ExtractToDirectoryAsync(archiveFileName, _steamCmdStandardLocation, true, CancellationToken.None);
+            using FileStream sourceStream = File.OpenRead(archiveFileName);
+            using GZipStream stream = new(sourceStream, CompressionMode.Decompress);
+
+            await TarFile.ExtractToDirectoryAsync(stream, _steamCmdStandardLocation, true, CancellationToken.None);
+
+            string executablePath = GetExecutablePath();
+            UnixFileMode mode = File.GetUnixFileMode(executablePath);
+            File.SetUnixFileMode(executablePath, mode | UnixFileMode.UserExecute);
+
+            return;
         }
 
         throw new PlatformNotSupportedException("SteamCMD is supported only on Windows and Linux");
@@ -83,10 +94,19 @@ public sealed partial class SteamCMD : ISteamCMD
         string executablePath = GetExecutablePath();
         string archivePath = GetArchivePath();
 
+        _executableFileName = executablePath;
+
         if (File.Exists(executablePath))
         {
             return this;
         }
+
+        if (File.Exists(archivePath))
+        {
+            File.Delete(archivePath);
+        }
+
+        Directory.CreateDirectory(_steamCmdStandardLocation);
 
         using HttpClient httpClient = new();
         await File.WriteAllBytesAsync(archivePath, await httpClient.GetByteArrayAsync(GetArchiveURL()));
@@ -105,8 +125,6 @@ public sealed partial class SteamCMD : ISteamCMD
         }
 
         File.Delete(archivePath);
-
-        _executableFileName = executablePath;
 
         return this;
     }

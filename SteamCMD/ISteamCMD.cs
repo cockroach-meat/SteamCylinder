@@ -10,10 +10,8 @@ public enum SteamCMDPlatform
 
 public interface ISteamCMD : IService
 {
-    List<string> Output { get; }
+    string Output { get; }
     bool IsSteamGuardCodeNeeded { get; }
-
-    Task<ISteamCMD> StartAsync();
 
     ISteamCMD SetExecutable(string fileName, string arguments = "");
     Task<ISteamCMD> EnsureDownloadAsync();

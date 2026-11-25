@@ -11,52 +11,73 @@ public sealed partial class SteamCMD : ISteamCMD
     private string _executableFileName = string.Empty;
     private string _executableArguments = string.Empty;
 
+    private string _installDirectory = string.Empty;
+    private SteamCMDPlatform _platform = OperatingSystem.IsWindows() ? SteamCMDPlatform.Windows : SteamCMDPlatform.Linux;
+
+    private bool _loggedIn = false;
+    private string _username = string.Empty;
+    private string _password = string.Empty;
+
     public void Initialize(ServiceLocator serviceLocator)
     {
     
     }
 
-    public async Task<ISteamCMD> StartAsync()
-    {
-        StartProcess();
-        await WaitForReadyAsync();
-
-        return this;
-    }
-
     public async Task<ISteamCMD> SetInstallDirectory(string installDirectory)
     {
-        await ExecuteCommandAsync($"force_install_dir \"{installDirectory}\"");
+        _installDirectory = installDirectory;
 
         return this;
     }
 
     public async Task<ISteamCMD> SetPlatform(SteamCMDPlatform platform)
     {
-        await ExecuteCommandAsync($"@sSteamCmdForcePlatformType {(platform == SteamCMDPlatform.Linux ? "linux" : "windows")}");
+        _platform = platform;
 
         return this;
     }
 
     public async Task<bool> AuthenticateAnonymousAsync()
     {
-        await ExecuteCommandAsync("login anonymous");
+        _username = "anonymous";
 
-        return !OutputContains("ERROR");
+        return true;
     }
 
     public async Task<bool> AuthenticateAsync(string username, string password = "")
     {
-        await ExecuteCommandAsync($"login \"{username}\"{(string.IsNullOrEmpty(password) ? string.Empty : $" \"{password}\"")}");
+        _username = username;
+        _password = password;
 
-        return !OutputContains("ERROR");
+        await ExecuteCommandAsync($"login \"{username}\" \"{password}\"");
+
+        if (OutputContains("Steam Guard code:"))
+        {
+            IsSteamGuardCodeNeeded = true;
+            return false;
+        }
+
+        if (OutputContains("ERROR"))
+        {
+            return false;
+        }
+
+        _loggedIn = true;
+        return true;
     }
 
     public async Task<bool> SetSteamGuardCodeAsync(string code)
     {
-        await ExecuteCommandAsync(code);
+        await ExecuteCommandAsync($"set_steam_guard_code \"{code}\" +login \"{_username}\" \"{_password}\"");
 
-        return !OutputContains("ERROR", "invalid");
+        if (OutputContains("ERROR", "invalid"))
+        {
+            IsSteamGuardCodeNeeded = false;
+            _loggedIn = true;
+            return true;
+        }
+
+        return false;
     }
 
     public async Task<bool> UpdateAppAsync(int appId, bool validate = true)
