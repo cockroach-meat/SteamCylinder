@@ -82,10 +82,9 @@ public sealed partial class SteamCMD : ISteamCMD
     }
 
 
-    public ISteamCMD SetExecutable(string fileName, string arguments = "")
+    public ISteamCMD SetExecutable(string fileName)
     {
         _executableFileName = fileName;
-        _executableArguments = arguments;
         return this;
     }
 
