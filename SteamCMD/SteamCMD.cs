@@ -9,7 +9,6 @@ public sealed partial class SteamCMD : ISteamCMD
     private readonly string _steamCmdStandardLocation = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "steamcmd");
 
     private string _executableFileName = string.Empty;
-    private string _executableArguments = string.Empty;
 
     private string _installDirectory = string.Empty;
     private SteamCMDPlatform _platform = OperatingSystem.IsWindows() ? SteamCMDPlatform.Windows : SteamCMDPlatform.Linux;

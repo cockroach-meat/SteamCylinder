@@ -13,7 +13,7 @@ public interface ISteamCMD : IService
     string Output { get; }
     bool IsSteamGuardCodeNeeded { get; }
 
-    ISteamCMD SetExecutable(string fileName, string arguments = "");
+    ISteamCMD SetExecutable(string fileName);
     Task<ISteamCMD> EnsureDownloadAsync();
     
     Task<ISteamCMD> SetInstallDirectory(string installDirectory);
