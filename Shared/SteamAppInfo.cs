@@ -1,4 +1,4 @@
-namespace SteamCylinder.Services.SteamCMD;
+namespace SteamCylinder.Shared;
 
 public class SteamAppInfo
 {

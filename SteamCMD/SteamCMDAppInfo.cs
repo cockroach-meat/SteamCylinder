@@ -1,5 +1,7 @@
 using Gameloop.Vdf;
 
+using SteamCylinder.Shared;
+
 namespace SteamCylinder.Services.SteamCMD;
 
 public sealed partial class SteamCMD : ISteamCMD

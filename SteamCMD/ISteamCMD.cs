@@ -1,4 +1,5 @@
 using SteamCylinder.Core;
+using SteamCylinder.Shared;
 
 namespace SteamCylinder.Services.SteamCMD;
 
@@ -16,8 +17,9 @@ public interface ISteamCMD : IService
     ISteamCMD SetExecutable(string fileName);
     Task<ISteamCMD> EnsureDownloadAsync();
     
-    Task<ISteamCMD> SetInstallDirectory(string installDirectory);
-    Task<ISteamCMD> SetPlatform(SteamCMDPlatform platform);
+    string GetInstallDirectory();
+    ISteamCMD SetInstallDirectory(string installDirectory);
+    ISteamCMD SetPlatform(SteamCMDPlatform platform);
 
     Task<bool> AuthenticateAnonymousAsync();
     Task<bool> AuthenticateAsync(string username, string password = "");
