@@ -24,4 +24,6 @@ public interface ISteamCMD : IService
     Task<bool> SetSteamGuardCodeAsync(string code);
 
     Task<bool> UpdateAppAsync(int appId, bool validate = true);
+
+    Task<SteamAppInfo> GetAppInfoAsync(int appId);
 }

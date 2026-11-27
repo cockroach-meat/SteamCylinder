@@ -81,7 +81,7 @@ public sealed partial class SteamCMD : ISteamCMD
 
     public async Task<bool> UpdateAppAsync(int appId, bool validate = true)
     {
-        await ExecuteCommandAsync($"app_update {appId}{(validate ? " validate" : string.Empty)}");
+        await ExecuteCommandAsync($"app_update {appId}{(validate ? " validate" : string.Empty)}", $"force_install_dir \"{Path.Combine(_installDirectory, appId.ToString())}\"");
         
         return OutputContains("Success");
     }
