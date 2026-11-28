@@ -22,14 +22,21 @@ public sealed partial class SteamCMD : ISteamCMD
     
     }
 
-    public async Task<ISteamCMD> SetInstallDirectory(string installDirectory)
+    public string GetInstallDirectory() => _installDirectory;
+
+    public ISteamCMD SetInstallDirectory(string installDirectory)
     {
         _installDirectory = installDirectory;
+
+        if (!Directory.Exists(installDirectory))
+        {
+            Directory.CreateDirectory(installDirectory);
+        }
 
         return this;
     }
 
-    public async Task<ISteamCMD> SetPlatform(SteamCMDPlatform platform)
+    public ISteamCMD SetPlatform(SteamCMDPlatform platform)
     {
         _platform = platform;
 
@@ -39,6 +46,7 @@ public sealed partial class SteamCMD : ISteamCMD
     public async Task<bool> AuthenticateAnonymousAsync()
     {
         _username = "anonymous";
+        _loggedIn = true;
 
         return true;
     }
@@ -81,7 +89,7 @@ public sealed partial class SteamCMD : ISteamCMD
 
     public async Task<bool> UpdateAppAsync(int appId, bool validate = true)
     {
-        await ExecuteCommandAsync($"app_update {appId}{(validate ? " validate" : string.Empty)}");
+        await ExecuteCommandAsync($"app_update {appId}{(validate ? " validate" : string.Empty)}", $"force_install_dir \"{Path.Combine(_installDirectory, appId.ToString())}\"");
         
         return OutputContains("Success");
     }

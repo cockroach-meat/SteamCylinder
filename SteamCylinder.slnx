@@ -2,4 +2,7 @@
   <Project Path="Bootstrap/Bootstrap.csproj" />
   <Project Path="Core/Core.csproj" />
   <Project Path="UI/UI.csproj" />
+  <Project Path="SteamCMD/SteamCMD.csproj" />
+  <Project Path="Shared/Shared.csproj" />
+  <Project Path="GameManager/GameManager.csproj" />
 </Solution>
